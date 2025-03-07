@@ -1,15 +1,12 @@
 <template>
-    <div>
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="app-container">
+      <!-- Navbar for Larger Screens -->
+      <nav v-if="!isMobile" class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
           <a class="navbar-brand" href="#">ChatBot</a>
-          
+  
           <!-- Hamburger Button for Mobile -->
-          <button 
-            class="navbar-toggler" 
-            type="button" 
-            @click="toggleMenu"
-          >
+          <button class="navbar-toggler" type="button" @click="toggleMenu">
             <span class="navbar-toggler-icon"></span>
           </button>
   
@@ -30,9 +27,25 @@
         </div>
       </nav>
   
-      <!-- Dynamic Component -->
-      <div class="container mt-3">
+      <!-- Dynamic Component Display -->
+      <div class="content">
         <component :is="currentView"></component>
+      </div>
+  
+      <!-- Bottom Tab Navigation for Mobile -->
+      <div v-if="isMobile" class="bottom-nav">
+        <button @click="changeView('Adverts')" :class="{ active: currentView === 'Adverts' }">
+          <span class="icon">🏠</span>
+          <span>Home</span>
+        </button>
+        <button @click="changeView('ChatBot')" :class="{ active: currentView === 'ChatBot' }">
+          <span class="icon">💬</span>
+          <span>ChatBot</span>
+        </button>
+        <button @click="changeView('AboutUs')" :class="{ active: currentView === 'AboutUs' }">
+          <span class="icon">ℹ️</span>
+          <span>About Us</span>
+        </button>
       </div>
     </div>
   </template>
@@ -46,8 +59,9 @@
     components: { Adverts, ChatBot, AboutUs },
     data() {
       return {
-        currentView: "Adverts",
-        isMenuOpen: false, 
+        currentView: "Adverts", 
+        isMenuOpen: false,
+        isMobile: window.innerWidth <= 768, 
       };
     },
     methods: {
@@ -57,14 +71,90 @@
       changeView(view) {
         this.currentView = view;
         this.isMenuOpen = false; 
-      }
-    }
+      },
+      handleResize() {
+        this.isMobile = window.innerWidth <= 768; 
+      },
+    },
+    mounted() {
+      window.addEventListener("resize", this.handleResize);
+    },
+    beforeUnmount() {
+      window.removeEventListener("resize", this.handleResize);
+    },
   };
   </script>
   
-  <style>
-  .navbar-collapse {
-    transition: height 0.3s ease-in-out;
+  <style scoped>
+  /* Main container with gray background */
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f0f0f0; 
+    color: #333; 
   }
-  </style>
   
+  /* Content area with padding to prevent overlap */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  
+  /* Bottom Navigation for Mobile */
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    background: #222;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 0;
+    border-top: 2px solid #444;
+    margin-top: 15px;
+  }
+  
+  /* Bottom Navigation Buttons */
+  .bottom-nav button {
+    flex: 1;
+    border: none;
+    background: none;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    padding: 10px 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: color 0.3s;
+  }
+  
+  .bottom-nav button .icon {
+    font-size: 20px;
+  }
+  
+  /* Active Tab */
+  .bottom-nav button.active {
+    color: #00d1b2;
+    font-weight: bold;
+  }
+  
+  /* Navbar styling */
+  .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+
+  /* Ensuring spacing between navbar and content */
+  @media (min-width: 769px) {
+    .content {
+      padding-top: 80px; 
+    }
+  }
+  
+  </style>

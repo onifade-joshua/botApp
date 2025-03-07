@@ -16,7 +16,7 @@
     </div>
 
     <!-- Add New Advert Form (Now at the Bottom) -->
-    <div class="row mt-5">
+    <div class="row mt-5 advert">
       <div class="col-md-6 mx-auto">
         <div class="card p-3 mb-4 advert-form">
           <h4 class="text-center">Add New Advert</h4>
@@ -85,6 +85,9 @@ export default {
 </script>
 
 <style>
+.advert {
+  padding-bottom: 80px;
+}
 .card {
   margin-bottom: 20px;
 }
