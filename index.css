@@ -1,3 +1,7 @@
+.advert {
+  padding-bottom: 80px;
+}
+
 .card {
   margin-bottom: 20px;
 }
@@ -16,27 +20,137 @@
   background: #f8f9fa;
   border-radius: 5px;
   height: 300px;
-  overflow-y: scroll;
+  margin-bottom: 100px;
+  padding: 15px;
+  overflow-y: auto;
 }
 
-.input-container {
+.input-wrapper {
+  background: none;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  margin-top: 15px;
+  width: 100%;
+  padding: 15px;
   display: flex;
+  bottom: 50px;
+  left: 0;
+  right: 0;
 }
 
-.input-container input {
-  width: 60%;
+.input-wrapper input {
+  width: 50%;
   max-width: 400px;
 }
 
-.input-container button {
-  white-space: nowrap;
+.mic-button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 20px;
 }
 
-.navbar-collapse {
-  transition: height .3s ease-in-out;
+.chat-image {
+  border-radius: 5px;
+  max-width: 100%;
+  height: auto;
+  margin-top: 5px;
+  display: block;
+}
+
+@media (width <= 768px) {
+  .input-wrapper {
+    bottom: 10px;
+  }
+
+  .input-wrapper input {
+    width: 80%;
+  }
+
+  .input-wrapper button {
+    white-space: nowrap;
+  }
+}
+
+.about-us[data-v-beab2b] {
+  background: #f9f9f9;
+  border-radius: 10px;
+  margin-bottom: 80px;
+  padding: 80px 60px;
+  box-shadow: 0 4px 10px #0000001a;
+}
+
+.section[data-v-beab2b] {
+  margin-top: 30px;
+}
+
+.list-group-item[data-v-beab2b] {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+}
+
+.app-container[data-v-88308f] {
+  color: #333;
+  background-color: #f0f0f0;
+  flex-direction: column;
+  height: 100vh;
+  display: flex;
+}
+
+.content[data-v-88308f] {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.bottom-nav[data-v-88308f] {
+  background: #222;
+  border-top: 2px solid #444;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 15px;
+  padding: 15px 0;
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+.bottom-nav button[data-v-88308f] {
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  background: none;
+  border: none;
+  flex-direction: column;
+  flex: 1;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 14px;
+  transition: color .3s;
+  display: flex;
+}
+
+.bottom-nav button .icon[data-v-88308f] {
+  font-size: 20px;
+}
+
+.bottom-nav button.active[data-v-88308f] {
+  color: #00d1b2;
+  font-weight: bold;
+}
+
+.navbar[data-v-88308f] {
+  z-index: 1000;
+  width: 100%;
+  position: fixed;
+  top: 0;
+}
+
+@media (width >= 769px) {
+  .content[data-v-88308f] {
+    padding-top: 80px;
+  }
 }
 /*# sourceMappingURL=index.css.map */

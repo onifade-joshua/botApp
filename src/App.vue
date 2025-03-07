@@ -86,7 +86,6 @@
   </script>
   
   <style scoped>
-  /* Main container with gray background */
   .app-container {
     display: flex;
     flex-direction: column;
@@ -94,15 +93,12 @@
     background-color: #f0f0f0; 
     color: #333; 
   }
-  
-  /* Content area with padding to prevent overlap */
   .content {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
   }
   
-  /* Bottom Navigation for Mobile */
   .bottom-nav {
     display: flex;
     justify-content: space-around;
@@ -115,8 +111,6 @@
     border-top: 2px solid #444;
     margin-top: 15px;
   }
-  
-  /* Bottom Navigation Buttons */
   .bottom-nav button {
     flex: 1;
     border: none;
@@ -136,21 +130,16 @@
     font-size: 20px;
   }
   
-  /* Active Tab */
   .bottom-nav button.active {
     color: #00d1b2;
     font-weight: bold;
   }
-  
-  /* Navbar styling */
   .navbar {
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 1000;
   }
-
-  /* Ensuring spacing between navbar and content */
   @media (min-width: 769px) {
     .content {
       padding-top: 80px; 

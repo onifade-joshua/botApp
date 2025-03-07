@@ -52,7 +52,7 @@
             },
             {
               headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+                Authorization: `Bearer ${import.meta.env.PARCEL_OPENAI_API_KEY}`,
                 "Content-Type": "application/json",
               },
             }
@@ -126,7 +126,6 @@
   margin-bottom: 100px; 
 }
 
-/* Centered Input Section */
 .input-wrapper {
   display: flex;
   justify-content: center;
@@ -160,7 +159,6 @@
     border-radius: 5px;
   }
   
-  /* Mobile View Adjustments */
   @media (max-width: 768px) {
     .input-wrapper {
       bottom: 10px;

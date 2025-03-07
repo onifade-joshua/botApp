@@ -69,7 +69,8 @@ var $34ff0bd6d834172c$export$2e2bcd8739ae039 = {
     data () {
         return {
             currentView: "Adverts",
-            isMenuOpen: false
+            isMenuOpen: false,
+            isMobile: window.innerWidth <= 768
         };
     },
     methods: {
@@ -79,7 +80,16 @@ var $34ff0bd6d834172c$export$2e2bcd8739ae039 = {
         changeView (view) {
             this.currentView = view;
             this.isMenuOpen = false;
+        },
+        handleResize () {
+            this.isMobile = window.innerWidth <= 768;
         }
+    },
+    mounted () {
+        window.addEventListener("resize", this.handleResize);
+    },
+    beforeUnmount () {
+        window.removeEventListener("resize", this.handleResize);
     }
 };
 
@@ -98,7 +108,7 @@ let $64264ac6a9fa1a9d$var$initialize = ()=>{
     $64264ac6a9fa1a9d$var$script.render = (parcelRequire("3TpDV")).render;
     $64264ac6a9fa1a9d$var$script.__cssModules = {};
     (parcelRequire("52QWp")).default($64264ac6a9fa1a9d$var$script);
-    $64264ac6a9fa1a9d$var$script.__scopeId = 'data-v-60cbbb';
+    $64264ac6a9fa1a9d$var$script.__scopeId = 'data-v-3d685d';
     $64264ac6a9fa1a9d$var$script.__file = "Adverts.vue";
 };
 $64264ac6a9fa1a9d$var$initialize();
@@ -202,7 +212,7 @@ const $2d5a6654481fc54c$var$_hoisted_7 = {
     class: "card-text"
 };
 const $2d5a6654481fc54c$var$_hoisted_8 = {
-    class: "row mt-5"
+    class: "row mt-5 advert"
 };
 const $2d5a6654481fc54c$var$_hoisted_9 = {
     class: "col-md-6 mx-auto"
@@ -338,7 +348,7 @@ let $6e423fd42cc6024e$var$initialize = ()=>{
     $6e423fd42cc6024e$var$script.render = (parcelRequire("1Yj5w")).render;
     $6e423fd42cc6024e$var$script.__cssModules = {};
     (parcelRequire("l9pI3")).default($6e423fd42cc6024e$var$script);
-    $6e423fd42cc6024e$var$script.__scopeId = 'data-v-15c301';
+    $6e423fd42cc6024e$var$script.__scopeId = 'data-v-7a6be9';
     $6e423fd42cc6024e$var$script.__file = "ChatBot.vue";
 };
 $6e423fd42cc6024e$var$initialize();
@@ -369,7 +379,6 @@ var $954c5bf7a001446f$export$2e2bcd8739ae039 = {
                 text: this.userInput
             });
             try {
-                console.log("API Key:", $954c5bf7a001446f$import_meta.env.PARCEL_OPENAI_API_KEY);
                 const response = await (0, ($parcel$interopDefault($kLWFh$axios))).post("https://api.openai.com/v1/chat/completions", {
                     model: "gpt-3.5-turbo",
                     messages: [
@@ -380,23 +389,62 @@ var $954c5bf7a001446f$export$2e2bcd8739ae039 = {
                     ]
                 }, {
                     headers: {
-                        Authorization: `Bearer ${$954c5bf7a001446f$import_meta.env.PARCEL_OPENAI_API_KEY}`,
+                        Authorization: `Bearer ${$954c5bf7a001446f$import_meta.env.VITE_OPENAI_API_KEY}`,
                         "Content-Type": "application/json"
                     }
                 });
                 const botReply = response.data.choices[0].message.content;
-                this.messages.push({
+                if (this.userInput.toLowerCase().includes("buy a car")) {
+                    const imageUrl = await this.fetchCarImage(this.userInput);
+                    this.messages.push({
+                        sender: "bot",
+                        text: botReply,
+                        image: imageUrl
+                    });
+                } else this.messages.push({
                     sender: "bot",
                     text: botReply
                 });
             } catch (error) {
-                console.error("OpenAI API Error:", error.response ? error.response.data : error.message);
+                console.error("OpenAI API Error:", error);
                 this.messages.push({
                     sender: "bot",
                     text: "Sorry, I couldn't fetch a response."
                 });
             }
             this.userInput = "";
+        },
+        async fetchCarImage (query) {
+            try {
+                const unsplashResponse = await (0, ($parcel$interopDefault($kLWFh$axios))).get("https://api.unsplash.com/search/photos", {
+                    params: {
+                        query: query,
+                        client_id: $954c5bf7a001446f$import_meta.env.VITE_UNSPLASH_ACCESS_KEY,
+                        per_page: 1
+                    }
+                });
+                return unsplashResponse.data.results[0]?.urls.small || "";
+            } catch (error) {
+                console.error("Unsplash API Error:", error);
+                return "";
+            }
+        },
+        startSpeechRecognition () {
+            if (!("webkitSpeechRecognition" in window)) {
+                alert("Speech recognition not supported in this browser.");
+                return;
+            }
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = "en-US";
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.onresult = (event)=>{
+                this.userInput = event.results[0][0].transcript;
+            };
+            recognition.onerror = (event)=>{
+                console.error("Speech recognition error:", event.error);
+            };
+            recognition.start();
         }
     }
 };
@@ -422,11 +470,17 @@ const $16fa338a0206ae38$var$_hoisted_4 = {
     class: "text-danger"
 };
 const $16fa338a0206ae38$var$_hoisted_5 = {
-    class: "input-container"
+    key: 2
+};
+const $16fa338a0206ae38$var$_hoisted_6 = [
+    "src"
+];
+const $16fa338a0206ae38$var$_hoisted_7 = {
+    class: "input-wrapper"
 };
 function $16fa338a0206ae38$export$b3890eb0ae9dca99(_ctx, _cache, $props, $setup, $data, $options) {
     return (0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("div", $16fa338a0206ae38$var$_hoisted_1, [
-        _cache[3] || (_cache[3] = (0, $kLWFh$vue.createElementVNode)("h2", {
+        _cache[4] || (_cache[4] = (0, $kLWFh$vue.createElementVNode)("h2", {
             class: "text-center text-info"
         }, "AI Chatbot", -1)),
         (0, $kLWFh$vue.createElementVNode)("div", $16fa338a0206ae38$var$_hoisted_2, [
@@ -436,16 +490,26 @@ function $16fa338a0206ae38$export$b3890eb0ae9dca99(_ctx, _cache, $props, $setup,
                     class: "mb-2"
                 }, [
                     msg.sender === 'user' ? ((0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("strong", $16fa338a0206ae38$var$_hoisted_3, "You: ")) : ((0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("strong", $16fa338a0206ae38$var$_hoisted_4, "Bot: ")),
-                    (0, $kLWFh$vue.createElementVNode)("span", null, (0, $kLWFh$vue.toDisplayString)(msg.text), 1)
+                    !msg.image ? ((0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("span", $16fa338a0206ae38$var$_hoisted_5, (0, $kLWFh$vue.toDisplayString)(msg.text), 1)) : (0, $kLWFh$vue.createCommentVNode)("", true),
+                    msg.image ? ((0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("img", {
+                        key: 3,
+                        src: msg.image,
+                        alt: "Requested Image",
+                        class: "chat-image"
+                    }, null, 8, $16fa338a0206ae38$var$_hoisted_6)) : (0, $kLWFh$vue.createCommentVNode)("", true)
                 ]);
             }), 128))
         ]),
-        (0, $kLWFh$vue.createElementVNode)("div", $16fa338a0206ae38$var$_hoisted_5, [
+        (0, $kLWFh$vue.createElementVNode)("div", $16fa338a0206ae38$var$_hoisted_7, [
+            (0, $kLWFh$vue.createElementVNode)("button", {
+                class: "mic-button",
+                onClick: _cache[0] || (_cache[0] = (...args)=>$options.startSpeechRecognition && $options.startSpeechRecognition(...args))
+            }, " \uD83C\uDFA4 "),
             (0, $kLWFh$vue.withDirectives)((0, $kLWFh$vue.createElementVNode)("input", {
-                "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event)=>$data.userInput = $event),
+                "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event)=>$data.userInput = $event),
                 class: "form-control",
                 placeholder: "Ask me anything...",
-                onKeyup: _cache[1] || (_cache[1] = (0, $kLWFh$vue.withKeys)((...args)=>$options.sendMessage && $options.sendMessage(...args), [
+                onKeyup: _cache[2] || (_cache[2] = (0, $kLWFh$vue.withKeys)((...args)=>$options.sendMessage && $options.sendMessage(...args), [
                     "enter"
                 ]))
             }, null, 544), [
@@ -456,7 +520,7 @@ function $16fa338a0206ae38$export$b3890eb0ae9dca99(_ctx, _cache, $props, $setup,
             ]),
             (0, $kLWFh$vue.createElementVNode)("button", {
                 class: "btn btn-success",
-                onClick: _cache[2] || (_cache[2] = (...args)=>$options.sendMessage && $options.sendMessage(...args))
+                onClick: _cache[3] || (_cache[3] = (...args)=>$options.sendMessage && $options.sendMessage(...args))
             }, "Send")
         ])
     ]);
@@ -479,11 +543,13 @@ $parcel$export(module.exports, "default", () => $cad247afa7a47c1c$export$2e2bcd8
 let $cad247afa7a47c1c$var$script;
 
 
+
 let $cad247afa7a47c1c$var$initialize = ()=>{
     $cad247afa7a47c1c$var$script = {};
     $cad247afa7a47c1c$var$script.render = (parcelRequire("8mOZX")).render;
+    $cad247afa7a47c1c$var$script.__cssModules = {};
     (parcelRequire("jStTY")).default($cad247afa7a47c1c$var$script);
-    $cad247afa7a47c1c$var$script.__scopeId = 'data-v-6f8382';
+    $cad247afa7a47c1c$var$script.__scopeId = 'data-v-beab2b';
     $cad247afa7a47c1c$var$script.__file = "AboutUs.vue";
 };
 $cad247afa7a47c1c$var$initialize();
@@ -495,16 +561,11 @@ parcelRegister("8mOZX", function(module, exports) {
 $parcel$export(module.exports, "render", () => $6177effd85cccad3$export$b3890eb0ae9dca99);
 
 const $6177effd85cccad3$var$_hoisted_1 = {
-    class: "container my-5"
+    class: "container my-5 about-us"
 };
 function $6177effd85cccad3$export$b3890eb0ae9dca99(_ctx, _cache) {
     return (0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("div", $6177effd85cccad3$var$_hoisted_1, _cache[0] || (_cache[0] = [
-        (0, $kLWFh$vue.createElementVNode)("h2", {
-            class: "text-center text-warning"
-        }, "About Us", -1),
-        (0, $kLWFh$vue.createElementVNode)("p", {
-            class: "text-muted text-center"
-        }, "We are a tech company dedicated to innovation and AI solutions.", -1)
+        (0, $kLWFh$vue.createStaticVNode)('<h2 class="text-center text-warning" data-v-beab2b>About Us</h2><p class="text-muted text-center lead" data-v-beab2b> We are a tech company committed to delivering cutting-edge AI solutions and innovative digital experiences. </p><div class="section" data-v-beab2b><h3 class="text-primary text-center" data-v-beab2b>Our Mission</h3><p data-v-beab2b> Our mission is to revolutionize industries with AI-driven technologies that empower businesses and enhance everyday life. We strive to make AI more accessible, ethical, and impactful. </p></div><div class="section" data-v-beab2b><h3 class="text-success text-center" data-v-beab2b>Our Vision</h3><p data-v-beab2b> We envision a future where AI seamlessly integrates into human lives, enhancing productivity, creativity, and problem-solving capabilities while maintaining ethical standards. </p></div><div class="section" data-v-beab2b><h3 class="text-info text-center" data-v-beab2b>Our Core Values</h3><ul class="list-group" data-v-beab2b><li class="list-group-item" data-v-beab2b>\uD83D\uDE80 Innovation \u2013 Continuously pushing the boundaries of technology.</li><li class="list-group-item" data-v-beab2b>\uD83E\uDD1D Integrity \u2013 Upholding ethical AI development and transparency.</li><li class="list-group-item" data-v-beab2b>\uD83C\uDFAF Customer-Centric \u2013 Prioritizing user-friendly and impactful solutions.</li><li class="list-group-item" data-v-beab2b>\uD83C\uDF0D Inclusivity \u2013 Creating AI solutions for everyone, everywhere.</li></ul></div><div class="section" data-v-beab2b><h3 class="text-danger text-center" data-v-beab2b>Meet Our Team</h3><p data-v-beab2b> Our team consists of passionate software engineers, data scientists, and AI specialists working together to drive technological advancements. We believe in collaboration, creativity, and continuous learning. </p></div><div class="text-center mt-4" data-v-beab2b><p class="text-dark" data-v-beab2b> Want to learn more or collaborate with us? <strong data-v-beab2b>Let&#39;s build the future together!</strong></p><button class="btn btn-warning" data-v-beab2b>Contact Us</button></div>', 7)
     ]));
 }
 
@@ -525,16 +586,17 @@ parcelRegister("asRSA", function(module, exports) {
 $parcel$export(module.exports, "render", () => $01f753dff44a36fb$export$b3890eb0ae9dca99);
 
 const $01f753dff44a36fb$var$_hoisted_1 = {
-    class: "navbar navbar-expand-lg navbar-dark bg-dark"
+    class: "app-container"
 };
 const $01f753dff44a36fb$var$_hoisted_2 = {
-    class: "container"
+    key: 0,
+    class: "navbar navbar-expand-lg navbar-dark bg-dark"
 };
 const $01f753dff44a36fb$var$_hoisted_3 = {
-    class: "navbar-nav ml-auto"
+    class: "container"
 };
 const $01f753dff44a36fb$var$_hoisted_4 = {
-    class: "nav-item"
+    class: "navbar-nav ml-auto"
 };
 const $01f753dff44a36fb$var$_hoisted_5 = {
     class: "nav-item"
@@ -543,13 +605,20 @@ const $01f753dff44a36fb$var$_hoisted_6 = {
     class: "nav-item"
 };
 const $01f753dff44a36fb$var$_hoisted_7 = {
-    class: "container mt-3"
+    class: "nav-item"
+};
+const $01f753dff44a36fb$var$_hoisted_8 = {
+    class: "content"
+};
+const $01f753dff44a36fb$var$_hoisted_9 = {
+    key: 1,
+    class: "bottom-nav"
 };
 function $01f753dff44a36fb$export$b3890eb0ae9dca99(_ctx, _cache, $props, $setup, $data, $options) {
-    return (0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("div", null, [
-        (0, $kLWFh$vue.createElementVNode)("nav", $01f753dff44a36fb$var$_hoisted_1, [
-            (0, $kLWFh$vue.createElementVNode)("div", $01f753dff44a36fb$var$_hoisted_2, [
-                _cache[5] || (_cache[5] = (0, $kLWFh$vue.createElementVNode)("a", {
+    return (0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("div", $01f753dff44a36fb$var$_hoisted_1, [
+        !$data.isMobile ? ((0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("nav", $01f753dff44a36fb$var$_hoisted_2, [
+            (0, $kLWFh$vue.createElementVNode)("div", $01f753dff44a36fb$var$_hoisted_3, [
+                _cache[8] || (_cache[8] = (0, $kLWFh$vue.createElementVNode)("a", {
                     class: "navbar-brand",
                     href: "#"
                 }, "ChatBot", -1)),
@@ -557,7 +626,7 @@ function $01f753dff44a36fb$export$b3890eb0ae9dca99(_ctx, _cache, $props, $setup,
                     class: "navbar-toggler",
                     type: "button",
                     onClick: _cache[0] || (_cache[0] = (...args)=>$options.toggleMenu && $options.toggleMenu(...args))
-                }, _cache[4] || (_cache[4] = [
+                }, _cache[7] || (_cache[7] = [
                     (0, $kLWFh$vue.createElementVNode)("span", {
                         class: "navbar-toggler-icon"
                     }, null, -1)
@@ -570,8 +639,8 @@ function $01f753dff44a36fb$export$b3890eb0ae9dca99(_ctx, _cache, $props, $setup,
                         }
                     ])
                 }, [
-                    (0, $kLWFh$vue.createElementVNode)("ul", $01f753dff44a36fb$var$_hoisted_3, [
-                        (0, $kLWFh$vue.createElementVNode)("li", $01f753dff44a36fb$var$_hoisted_4, [
+                    (0, $kLWFh$vue.createElementVNode)("ul", $01f753dff44a36fb$var$_hoisted_4, [
+                        (0, $kLWFh$vue.createElementVNode)("li", $01f753dff44a36fb$var$_hoisted_5, [
                             (0, $kLWFh$vue.createElementVNode)("a", {
                                 class: "nav-link",
                                 href: "#",
@@ -580,7 +649,7 @@ function $01f753dff44a36fb$export$b3890eb0ae9dca99(_ctx, _cache, $props, $setup,
                                 ]))
                             }, "Adverts")
                         ]),
-                        (0, $kLWFh$vue.createElementVNode)("li", $01f753dff44a36fb$var$_hoisted_5, [
+                        (0, $kLWFh$vue.createElementVNode)("li", $01f753dff44a36fb$var$_hoisted_6, [
                             (0, $kLWFh$vue.createElementVNode)("a", {
                                 class: "nav-link",
                                 href: "#",
@@ -589,7 +658,7 @@ function $01f753dff44a36fb$export$b3890eb0ae9dca99(_ctx, _cache, $props, $setup,
                                 ]))
                             }, "ChatBot")
                         ]),
-                        (0, $kLWFh$vue.createElementVNode)("li", $01f753dff44a36fb$var$_hoisted_6, [
+                        (0, $kLWFh$vue.createElementVNode)("li", $01f753dff44a36fb$var$_hoisted_7, [
                             (0, $kLWFh$vue.createElementVNode)("a", {
                                 class: "nav-link",
                                 href: "#",
@@ -601,10 +670,45 @@ function $01f753dff44a36fb$export$b3890eb0ae9dca99(_ctx, _cache, $props, $setup,
                     ])
                 ], 2)
             ])
-        ]),
-        (0, $kLWFh$vue.createElementVNode)("div", $01f753dff44a36fb$var$_hoisted_7, [
+        ])) : (0, $kLWFh$vue.createCommentVNode)("", true),
+        (0, $kLWFh$vue.createElementVNode)("div", $01f753dff44a36fb$var$_hoisted_8, [
             ((0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createBlock)((0, $kLWFh$vue.resolveDynamicComponent)($data.currentView)))
-        ])
+        ]),
+        $data.isMobile ? ((0, $kLWFh$vue.openBlock)(), (0, $kLWFh$vue.createElementBlock)("div", $01f753dff44a36fb$var$_hoisted_9, [
+            (0, $kLWFh$vue.createElementVNode)("button", {
+                onClick: _cache[4] || (_cache[4] = ($event)=>$options.changeView('Adverts')),
+                class: (0, $kLWFh$vue.normalizeClass)({
+                    active: $data.currentView === 'Adverts'
+                })
+            }, _cache[9] || (_cache[9] = [
+                (0, $kLWFh$vue.createElementVNode)("span", {
+                    class: "icon"
+                }, "\uD83C\uDFE0", -1),
+                (0, $kLWFh$vue.createElementVNode)("span", null, "Home", -1)
+            ]), 2),
+            (0, $kLWFh$vue.createElementVNode)("button", {
+                onClick: _cache[5] || (_cache[5] = ($event)=>$options.changeView('ChatBot')),
+                class: (0, $kLWFh$vue.normalizeClass)({
+                    active: $data.currentView === 'ChatBot'
+                })
+            }, _cache[10] || (_cache[10] = [
+                (0, $kLWFh$vue.createElementVNode)("span", {
+                    class: "icon"
+                }, "\uD83D\uDCAC", -1),
+                (0, $kLWFh$vue.createElementVNode)("span", null, "ChatBot", -1)
+            ]), 2),
+            (0, $kLWFh$vue.createElementVNode)("button", {
+                onClick: _cache[6] || (_cache[6] = ($event)=>$options.changeView('AboutUs')),
+                class: (0, $kLWFh$vue.normalizeClass)({
+                    active: $data.currentView === 'AboutUs'
+                })
+            }, _cache[11] || (_cache[11] = [
+                (0, $kLWFh$vue.createElementVNode)("span", {
+                    class: "icon"
+                }, "\u2139\uFE0F", -1),
+                (0, $kLWFh$vue.createElementVNode)("span", null, "About Us", -1)
+            ]), 2)
+        ])) : (0, $kLWFh$vue.createCommentVNode)("", true)
     ]);
 }
 
@@ -630,7 +734,7 @@ let $622b3ba819d084fb$var$initialize = ()=>{
     $622b3ba819d084fb$var$script.render = (parcelRequire("asRSA")).render;
     $622b3ba819d084fb$var$script.__cssModules = {};
     (parcelRequire("dF7ib")).default($622b3ba819d084fb$var$script);
-    $622b3ba819d084fb$var$script.__scopeId = 'data-v-c5a7e0';
+    $622b3ba819d084fb$var$script.__scopeId = 'data-v-88308f';
     $622b3ba819d084fb$var$script.__file = "App.vue";
 };
 $622b3ba819d084fb$var$initialize();
